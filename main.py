@@ -4,36 +4,24 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from math import sqrt
 
 class Ui_Calculator(object):    
-    styleSheet = """
-    QToolTip {
-        font-size: 25pt;
-    }
-    """
-    
-    def buttonObject(self, xCord, yCord, width, height, name, function):
-        self.font = QtGui.QFont()
-        self.font.setFamily("Segoe UI Light")
-        self.font.setPointSize(18)
-        self.font.setBold(False)
-        
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(xCord, yCord, width, height))
-        self.pushButton.setFont(self.font)
-        self.pushButton.setObjectName(name)
-        self.pushButton.clicked.connect(function)
-        
-        return self.pushButton
-
-    def setupUi(self, Calculator):
-        Calculator.setObjectName("Calculator")
-        Calculator.setMaximumSize(494, 421)
-        Calculator.setMinimumSize(494, 421)
-        Calculator.setWindowOpacity(0.96)
-        Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
-        Calculator.setWindowIcon(QtGui.QIcon('logo.ico'))
+    def __init__(self):
+        self.styleSheet = """
+            QToolTip {
+                font-size: 25pt;
+            }
+            """
+        self.calcHistory = ["0"]
+        self.pastResult = ""
+        self.pastCalculation = ""
+        self.aftFract = ""
+        self.befFract = ""    
+        self.value = "0"
 
         self.centralwidget = QtWidgets.QWidget(Calculator)
-        self.centralwidget.setObjectName("centralwidget")
+        self.font = QtGui.QFont()
+        self.numberField = QtWidgets.QLabel(self.centralwidget)
+        self.errorLabel = QtWidgets.QLabel(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(Calculator)
 
         self.pushButton_1 = self.buttonObject(10, 100, 111, 41, 'pushButton_1', self.percentClicked)
         self.pushButton_2 = self.buttonObject(130, 100, 111, 41, 'pushButton_2', self.clearEntry)
@@ -60,28 +48,34 @@ class Ui_Calculator(object):
         self.pushButton_23 = self.buttonObject(370, 350, 111, 41, 'pushButton_23', self.calculate)
         self.pushButton_24 = self.buttonObject(250, 350, 111, 41, 'pushButton_24', self.dotClicked)
 
-        font = QtGui.QFont()
-        font.setFamily("Segoe UI Light")
-        font.setPointSize(36)
-        font.setBold(False)
+    def setupUi(self, Calculator):
+        Calculator.setObjectName("Calculator")
+        Calculator.setMaximumSize(494, 421)
+        Calculator.setMinimumSize(494, 421)
+        Calculator.setWindowOpacity(0.96)
+        Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
+        Calculator.setWindowIcon(QtGui.QIcon('logo.ico'))
 
-        self.numberField = QtWidgets.QLabel(self.centralwidget)
+        self.centralwidget.setObjectName("centralwidget")
+
+        self.font.setFamily("Segoe UI Light")
+        self.font.setPointSize(36)
+        self.font.setBold(False)
+
         self.numberField.setGeometry(QtCore.QRect(10, 10, 471, 81))
-        self.numberField.setFont(font)
+        self.numberField.setFont(self.font)
         self.numberField.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.numberField.setObjectName("label")
         self.numberField.setToolTip('0')
 
-        font.setPointSize(16)
+        self.font.setPointSize(16)
 
-        self.errorLabel = QtWidgets.QLabel(self.centralwidget)
         self.errorLabel.setGeometry(QtCore.QRect(10, -50, 471, 81))
-        self.errorLabel.setFont(font)
+        self.errorLabel.setFont(self.font)
         self.errorLabel.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.errorLabel.setObjectName("errorLabel")
         
         Calculator.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(Calculator)
         self.statusbar.setObjectName("statusbar")
         Calculator.setStatusBar(self.statusbar)
 
@@ -89,9 +83,6 @@ class Ui_Calculator(object):
         QtCore.QMetaObject.connectSlotsByName(Calculator)
 
         self.value = self.numberField.text()
-        self.calcHistory = ['0']
-        self.pastResult = ''
-        self.aftFract = ''
 
     def retranslateUi(self, Calculator):
         _translate = QtCore.QCoreApplication.translate
@@ -122,6 +113,19 @@ class Ui_Calculator(object):
         self.pushButton_24.setText(_translate("Calculator", "."))
         self.numberField.setText(_translate("Calculator", "0"))
         self.errorLabel.setText(_translate("Calculator", ''))
+
+    def buttonObject(self, xCord, yCord, width, height, name, function):
+        self.font.setFamily("Segoe UI Light")
+        self.font.setPointSize(18)
+        self.font.setBold(False)
+        
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(xCord, yCord, width, height))
+        self.pushButton.setFont(self.font)
+        self.pushButton.setObjectName(name)
+        self.pushButton.clicked.connect(function)
+        
+        return self.pushButton
 
     def percentClicked(self):
         percent = ''
@@ -180,6 +184,8 @@ class Ui_Calculator(object):
             print(percent, pastNumber)
         except Exception as e:
             self.exceptErrors(e, "Error occured - percent function")
+        finally:
+            return None 
 
     def clearEntry(self):
         if len(self.calcHistory) == 1:
@@ -191,6 +197,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None 
         
     def clear(self):
         self.value = '0'
@@ -198,11 +205,10 @@ class Ui_Calculator(object):
         self.numberField.setToolTip(self.value)
         self.calcHistory = ['0']
         print(self.value)
+        return None
 
     def back(self):
-        if self.value == '0': 
-            return None
-        elif len(self.value) == 1:
+        if len(self.value) == 1:
             self.value = '0'
         else:
             self.value = self.value[0:len(self.value)-1]
@@ -210,6 +216,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def fraction(self):
         try:    
@@ -239,6 +246,8 @@ class Ui_Calculator(object):
             self.exceptErrors(e, "ZeroDivisionError - fraction function")
         except Exception as e:
             self.exceptErrors(e, "Error occured - fraction function")
+        finally:
+            return None 
 
     def expSec(self):
         try:
@@ -262,6 +271,8 @@ class Ui_Calculator(object):
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - expSec function")
+        finally:
+            return None 
 
     def rootSec(self):
         try:
@@ -284,30 +295,36 @@ class Ui_Calculator(object):
             self.checkLongNumber()
         except Exception as e:
             self.exceptErrors(e, "Error occured - rootSec function")
+        finally:
+            return None 
     
     def divide(self):
         self.value += '/'
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def multiply(self):
         self.value += '*'
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
         
     def minus(self):
         self.value += '-'
         self.numberField.setText(self.value)    
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def plus(self):
         self.value += '+'
         self.numberField.setText(self.value) 
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def calculate(self):
         try:
@@ -348,15 +365,17 @@ class Ui_Calculator(object):
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Syntax error - can't calculate")
+        finally:
+            return None
 
     def zeroClicked(self):
-        if self.value == '0':
-            return None 
-        else:
+        if self.value != '0':
             self.value += '0'
             self.numberField.setText(self.value)      
             self.numberField.setToolTip(self.value)
             print(self.value)
+
+        return None
 
     def oneClicked(self):
         if self.value == '0':
@@ -367,6 +386,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)  
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def twoClicked(self):
         if self.value == '0':
@@ -377,6 +397,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)     
         self.numberField.setToolTip(self.value) 
         print(self.value)
+        return None
 
     def threeClicked(self):
         if self.value == '0':
@@ -387,6 +408,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def fourClicked(self):
         if self.value == '0':
@@ -397,6 +419,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def fiveClicked(self):
         if self.value == '0':
@@ -407,6 +430,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def sixClicked(self):
         if self.value == '0':
@@ -417,6 +441,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def sevenClicked(self):
         if self.value == '0':
@@ -427,7 +452,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)      
         self.numberField.setToolTip(self.value)
         print(self.value)
-
+        return None
 
     def eightClicked(self):
         if self.value == '0':
@@ -438,6 +463,7 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)  
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def nineClicked(self):
         if self.value == '0':
@@ -448,12 +474,11 @@ class Ui_Calculator(object):
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def plusMinus(self):
-        try:
-            if self.value == '0':
-                return None         
-            elif float(self.value) % 1 == 0:
+        try:         
+            if float(self.value) % 1 == 0:
                 self.value = str(-(float(self.value)))
                 self.value = self.value[0:len(self.value)-2]
             elif float(self.value) % 1 != 0:
@@ -468,15 +493,19 @@ class Ui_Calculator(object):
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Can't convert it by plusMinus function")
+        finally:
+            return None 
 
     def dotClicked(self):
         self.value += '.'
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         print(self.value)
+        return None
 
     def clearErrors(self):
         self.errorLabel.setText('')
+        return None
 
     def checkLongNumber(self):
         if len(self.value) >= 64: 
@@ -485,13 +514,14 @@ class Ui_Calculator(object):
             self.value = '0'
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-        else:
-            return None
+        
+        return None
     
     def exceptErrors(self, errorLog, errorCom):
         print(errorLog)
         self.errorLabel.setText(errorCom)
         QtCore.QTimer.singleShot(2000, self.clearErrors)
+        return None
 
 if __name__ == "__main__":
     import sys
