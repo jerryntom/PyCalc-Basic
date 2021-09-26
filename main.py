@@ -26,7 +26,7 @@ class Ui_Calculator:
         self.percentBut = self.buttonObject(10, 100, 111, 41, '%', self.percentClicked)
         self.clearEntryBut = self.buttonObject(130, 100, 111, 41, 'CE', self.clearEntry)
         self.clearBut= self.buttonObject(250, 100, 111, 41, 'C', self.clear)
-        self.backBut = self.buttonObject(370, 100, 111, 41, 'back', self.back)
+        self.backBut = self.buttonObject(370, 100, 111, 41, 'Back', self.back)
         self.expSecBut = self.buttonObject(130, 150, 111, 41, 'x²', self.expSec)
         self.fractionBut = self.buttonObject(10, 150, 111, 41, '1/x', self.fraction)
         self.divideBut = self.buttonObject(370, 150, 111, 41, '/', self.mathSymbol)
