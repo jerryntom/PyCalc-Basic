@@ -2,7 +2,7 @@
 > powered by jerryntom 💻
 ## Features 📝
 - calculating simple expressions
-- mathematical functions (percents, fractions, power, exponentiation, square root)
+- mathematical functions (percents, fractions, exponentiation, square root)
 - built-in memory of operations  
 ## Things to do in future 💡
 - calculator modes (programmer mode, financial mode, etc.)
