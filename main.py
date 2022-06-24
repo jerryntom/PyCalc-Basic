@@ -55,7 +55,7 @@ class Ui_Calculator:
         Calculator.setMinimumSize(494, 421)
         Calculator.setWindowOpacity(0.96)
         Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
-        Calculator.setWindowIcon(QtGui.QIcon('logo.ico'))
+        Calculator.setWindowIcon(QtGui.QIcon('images/logo.ico'))
 
         self.centralwidget.setObjectName("centralwidget")
 
