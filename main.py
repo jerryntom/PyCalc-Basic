@@ -9,11 +9,11 @@ class Ui_Calculator:
                 font-size: 25pt;
             }
             """
-        self.calcHistory = ["0"]
+        self.calculatorHistory = ["0"]
         self.pastResult = ""
         self.pastCalculation = ""
         self.afterCalculation = ""
-        self.beforeCalc = ""    
+        self.beforeCalculation = ""    
         self.value = "0"
 
         self.centralwidget = QtWidgets.QWidget(Calculator)
@@ -22,30 +22,30 @@ class Ui_Calculator:
         self.errorLabel = QtWidgets.QLabel(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(Calculator)
 
-        self.percentBut = self.buttonObject(10, 100, 111, 41, '%', self.percentClicked)
-        self.clearEntryBut = self.buttonObject(130, 100, 111, 41, 'CE', self.clearEntry)
-        self.clearBut= self.buttonObject(250, 100, 111, 41, 'C', self.clear)
-        self.backBut = self.buttonObject(370, 100, 111, 41, 'Back', self.back)
-        self.expSecBut = self.buttonObject(130, 150, 111, 41, 'x²', self.squared)
-        self.fractionBut = self.buttonObject(10, 150, 111, 41, '1/x', self.oneTenth)
-        self.divideBut = self.buttonObject(370, 150, 111, 41, '/', self.mathButton)
-        self.rootSecBut = self.buttonObject(250, 150, 111, 41, '²√x', self.squareRoot)
-        self.eightBut = self.buttonObject(130, 200, 111, 41, '8', self.numberButton)
-        self.sevenBut = self.buttonObject(10, 200, 111, 41, '7', self.numberButton)
-        self.multiplyBut = self.buttonObject(370, 200, 111, 41, '*', self.mathButton)
-        self.nineBut = self.buttonObject(250, 200, 111, 41, '9', self.numberButton)
-        self.fiveBut = self.buttonObject(130, 250, 111, 41, '5', self.numberButton)
-        self.fourBut = self.buttonObject(10, 250, 111, 41, '4', self.numberButton)
-        self.substractBut = self.buttonObject(370, 250, 111, 41, '-', self.mathButton)
-        self.sixBut = self.buttonObject(250, 250, 111, 41, '6', self.numberButton)
-        self.twoBut = self.buttonObject(130, 300, 111, 41, '2', self.numberButton)
-        self.oneBut = self.buttonObject(10, 300, 111, 41, '1', self.numberButton)
-        self.addBut = self.buttonObject(370, 300, 111, 41, '+', self.mathButton)
-        self.threeBut = self.buttonObject(250, 300, 111, 41, '3', self.numberButton)
-        self.zeroBut = self.buttonObject(130, 350, 111, 41, '0', self.numberButton)
-        self.plusMinusBut = self.buttonObject(10, 350, 111, 41, '+/-', self.plusMinus)
-        self.calculateBut = self.buttonObject(370, 350, 111, 41, '=', self.calculate)
-        self.dotBut = self.buttonObject(250, 350, 111, 41, '.', self.mathButton)
+        self.percentButton = self.buttonObject(10, 100, 111, 41, '%', self.percents)
+        self.clearEntryButton = self.buttonObject(130, 100, 111, 41, 'CE', self.clearEntry)
+        self.clearButton= self.buttonObject(250, 100, 111, 41, 'C', self.clear)
+        self.backButton = self.buttonObject(370, 100, 111, 41, 'Back', self.back)
+        self.squaredButton = self.buttonObject(130, 150, 111, 41, 'x²', self.squared)
+        self.fractionButton = self.buttonObject(10, 150, 111, 41, '1/x', self.fraction)
+        self.divideButton = self.buttonObject(370, 150, 111, 41, '/', self.mathButton)
+        self.rootSecButton = self.buttonObject(250, 150, 111, 41, '²√x', self.squareRoot)
+        self.eightButton = self.buttonObject(130, 200, 111, 41, '8', self.numberButton)
+        self.sevenButton = self.buttonObject(10, 200, 111, 41, '7', self.numberButton)
+        self.multiplyButton = self.buttonObject(370, 200, 111, 41, '*', self.mathButton)
+        self.nineButton = self.buttonObject(250, 200, 111, 41, '9', self.numberButton)
+        self.fiveButton = self.buttonObject(130, 250, 111, 41, '5', self.numberButton)
+        self.fourButton = self.buttonObject(10, 250, 111, 41, '4', self.numberButton)
+        self.substractButton = self.buttonObject(370, 250, 111, 41, '-', self.mathButton)
+        self.sixButton = self.buttonObject(250, 250, 111, 41, '6', self.numberButton)
+        self.twoButton = self.buttonObject(130, 300, 111, 41, '2', self.numberButton)
+        self.oneButton = self.buttonObject(10, 300, 111, 41, '1', self.numberButton)
+        self.addButton = self.buttonObject(370, 300, 111, 41, '+', self.mathButton)
+        self.threeButton = self.buttonObject(250, 300, 111, 41, '3', self.numberButton)
+        self.zeroButton = self.buttonObject(130, 350, 111, 41, '0', self.numberButton)
+        self.plusMinusButton = self.buttonObject(10, 350, 111, 41, '+/-', self.plusMinus)
+        self.calculateButton = self.buttonObject(370, 350, 111, 41, '=', self.calculate)
+        self.commaButton = self.buttonObject(250, 350, 111, 41, '.', self.mathButton)
 
     def setupUi(self, Calculator): 
         """
@@ -62,7 +62,7 @@ class Ui_Calculator:
         Calculator.setMinimumSize(494, 421)
         Calculator.setWindowOpacity(0.96)
         Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
-        Calculator.setWindowIcon(QtGui.QIcon('logo.ico'))
+        Calculator.setWindowIcon(QtGui.QIcon('images/logo.ico'))
         Calculator.setWindowTitle("PyCalc Basic")
 
         self.centralwidget.setObjectName("centralwidget")
@@ -129,7 +129,7 @@ class Ui_Calculator:
 
         return self.pushButton
 
-    def percentClicked(self):
+    def percents(self):
         """
         Calculates certain percentage of previous number.
         For example 10 + 10% is 10 + 1.
@@ -139,16 +139,15 @@ class Ui_Calculator:
         """
         percent = ''
         pastNumber = ''
-        errorCheck = True 
         
         try: 
-            for i in range(len(self.value)-1, -1, -1):
+            for i in range(len(self.value) - 1, -1, -1):
                 if self.value[i] in ('-', '+', '*', '/'):
                     break
                 else:
                     percent += self.value[i]
             
-            for i in range(len(self.value)-len(percent)-2, -1, -1):
+            for i in range(len(self.value)-len(percent) - 2, -1, -1):
                 if self.value[i] in ('-', '+', '*', '/'):
                     break 
                 else:
@@ -176,11 +175,11 @@ class Ui_Calculator:
         Returns:
             None 
         """
-        if len(self.calcHistory) == 1:
+        if len(self.calculatorHistory) == 1:
             self.value = '0'
-        elif len(self.calcHistory) > 1:
-            self.calcHistory.pop()
-            self.value = self.calcHistory[len(self.calcHistory)-1]
+        elif len(self.calculatorHistory) > 1:
+            self.calculatorHistory.pop()
+            self.value = self.calculatorHistory[len(self.calculatorHistory)-1]
 
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
@@ -196,7 +195,7 @@ class Ui_Calculator:
         self.value = '0'
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
-        self.calcHistory = ['0']
+        self.calculatorHistory = ['0']
         print(self.value)
 
     def back(self):
@@ -215,9 +214,9 @@ class Ui_Calculator:
         self.numberField.setToolTip(self.value)
         print(self.value)
 
-    def oneTenth(self):
+    def fraction(self):
         """
-        Calculates 1/10 fraction of number. 
+        Calculates 1/x fraction where x is a current number. 
         Can be used if there's only a number not expression.
 
         Returns:
@@ -225,21 +224,21 @@ class Ui_Calculator:
         """
         try:    
             if self.value == self.afterCalculation:
-                self.value = self.beforeCalc
-                self.beforeCalc = self.afterCalculation
+                self.value = self.beforeCalculation
+                self.beforeCalculation = self.afterCalculation
             else:
                 if len(self.value) >= 12: 
                     self.exceptErrors('Too big number - size limit 12', 
                     "Too big number - fraction function, size limit")
                     return None
 
-                self.beforeCalc = self.value 
+                self.beforeCalculation = self.value 
                 self.value = self.betterRound(1 / float(self.value))
                     
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.afterCalculation = self.value
-            self.calcHistory.append(self.value)
+            self.calculatorHistory.append(self.value)
             self.checkLongNumber()
             print(self.value)
         except ZeroDivisionError as e:
@@ -257,7 +256,7 @@ class Ui_Calculator:
         try:
             self.value = float(self.value)
             self.value = self.betterRound(pow(self.value, 2))
-            self.calcHistory.append(self.value)
+            self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.checkLongNumber()
@@ -275,7 +274,7 @@ class Ui_Calculator:
         """        
         try:
             self.value = self.betterRound(sqrt(float(self.value)))
-            self.calcHistory.append(self.value)
+            self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.checkLongNumber()
@@ -312,7 +311,7 @@ class Ui_Calculator:
             if float(self.value) % 1 == 0 and '.' in self.value: 
                 self.value = self.value[0:len(self.value)-2]
             
-            self.calcHistory.append(self.value)
+            self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.pastResult = self.value 
             self.numberField.setToolTip(self.value)
@@ -324,6 +323,7 @@ class Ui_Calculator:
     def plusMinus(self):
         """
         Changes positive number to negative and vice versa.
+        Can be used if there's only a number not expression.
 
         Returns: 
             None
@@ -338,7 +338,7 @@ class Ui_Calculator:
             if self.value == '-0':
                 self.value = '0'
 
-            self.calcHistory.append(self.value)
+            self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             print(self.value)
@@ -356,7 +356,8 @@ class Ui_Calculator:
 
     def checkLongNumber(self):
         """
-        Result size limit handler. Checks if result exceeds size rule. 
+        Result size limit handler. 
+        Checks if result exceeds size rule. 
 
         Returns:
             None
@@ -439,7 +440,7 @@ class Ui_Calculator:
             if '.00000' in str(result) or '.99999' in str(result):
                 result = format(number, ".0f")
         
-        result = str(result).rstrip('0')
+            result = str(result).rstrip('0')
 
         return result 
 
