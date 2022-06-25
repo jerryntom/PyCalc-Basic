@@ -1,30 +1,29 @@
 # PyCalc - basic calculator 🧮
-> powered by jerryntom 💻
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KAJXTAYQC7BW)
+
+Support open source software and help me in further development 😃
 ## Features 📝
 - calculating simple expressions
 - mathematical functions (percents, fractions, exponentiation, square root)
 - built-in memory of operations  
-## Things to do in future 💡
-- calculator modes (programmer mode, financial mode, etc.)
-- more ellegant, modern design 
-- more than one design option to choose from menu 
-- resizable window 
-- ambient sounds
-- and more... 
 
-If you have some suggestions this is my e-mail: jaroslawtomczuk.ofi@gmail.com
 ## How it's made ❔
 PyCalc is written in Python with PyQt5 module. 
 ## Running ⚙️
-PyCalc requires PyQt5 module for running from main.py. You can install proper version with pip using requirements.txt. However, you can use .exe file and skip installing needed dependencies. 
+PyCalc requires PyQt5 module for running from main.py.<br>
+You can install proper version with pip using requirements.txt.<br> 
+However, you can use .exe file and skip installing needed dependencies. 
 ## Using ▶️
 ![calcWindow](images/calcWindow.png)
 
 - calculating entire expressions: 
-If you want you can write something like 10*10+2/3 in expression field. It can be calculated easily by clicking '=' button
+If you want you can write something like 10*10+2/3 in expression field.<br>
+It can be calculated easily by clicking '=' button.<br>
+Moreover it supports Python known operations like ** (exponentation), +- (minus), -- (plus), // (integer division).<br>
+Just try various combinations with specific symbols.
 - percents: 
 For now you can only use percents to calculate past number, 
-e.g.: 30 + 10% = 30 + (0.1 * 30) = 30 + 3 
+e.g. 30 + 10% = 30 + (0.1 * 30) = 30 + 3 
 - clear entry (CE):
 You can use it to come back to past result in history of operations 
 - clear (C):
