@@ -1,9 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from math import sqrt
 
+
 class Ui_Calculator:
-    # declarations of variables   
-    def __init__(self):     
+    def __init__(self):
         self.styleSheet = """
             QToolTip {
                 font-size: 25pt;
@@ -12,8 +12,8 @@ class Ui_Calculator:
         self.calcHistory = ["0"]
         self.pastResult = ""
         self.pastCalculation = ""
-        self.aftFrac = ""
-        self.befFrac = ""    
+        self.afterCalculation = ""
+        self.beforeCalc = ""    
         self.value = "0"
 
         self.centralwidget = QtWidgets.QWidget(Calculator)
@@ -22,40 +22,48 @@ class Ui_Calculator:
         self.errorLabel = QtWidgets.QLabel(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(Calculator)
 
-        # buttons 
         self.percentBut = self.buttonObject(10, 100, 111, 41, '%', self.percentClicked)
         self.clearEntryBut = self.buttonObject(130, 100, 111, 41, 'CE', self.clearEntry)
         self.clearBut= self.buttonObject(250, 100, 111, 41, 'C', self.clear)
         self.backBut = self.buttonObject(370, 100, 111, 41, 'Back', self.back)
-        self.expSecBut = self.buttonObject(130, 150, 111, 41, 'x²', self.expSec)
-        self.fractionBut = self.buttonObject(10, 150, 111, 41, '1/x', self.fraction)
-        self.divideBut = self.buttonObject(370, 150, 111, 41, '/', self.mathSymbol)
-        self.rootSecBut = self.buttonObject(250, 150, 111, 41, '²√x', self.rootSec)
-        self.eightBut = self.buttonObject(130, 200, 111, 41, '8', self.numbers)
-        self.sevenBut = self.buttonObject(10, 200, 111, 41, '7', self.numbers)
-        self.multiplyBut = self.buttonObject(370, 200, 111, 41, '*', self.mathSymbol)
-        self.nineBut = self.buttonObject(250, 200, 111, 41, '9', self.numbers)
-        self.fiveBut = self.buttonObject(130, 250, 111, 41, '5', self.numbers)
-        self.fourBut = self.buttonObject(10, 250, 111, 41, '4', self.numbers)
-        self.substractBut = self.buttonObject(370, 250, 111, 41, '-', self.mathSymbol)
-        self.sixBut = self.buttonObject(250, 250, 111, 41, '6', self.numbers)
-        self.twoBut = self.buttonObject(130, 300, 111, 41, '2', self.numbers)
-        self.oneBut = self.buttonObject(10, 300, 111, 41, '1', self.numbers)
-        self.addBut = self.buttonObject(370, 300, 111, 41, '+', self.mathSymbol)
-        self.threeBut = self.buttonObject(250, 300, 111, 41, '3', self.numbers)
-        self.zeroBut = self.buttonObject(130, 350, 111, 41, '0', self.numbers)
+        self.expSecBut = self.buttonObject(130, 150, 111, 41, 'x²', self.squared)
+        self.fractionBut = self.buttonObject(10, 150, 111, 41, '1/x', self.oneTenth)
+        self.divideBut = self.buttonObject(370, 150, 111, 41, '/', self.mathButton)
+        self.rootSecBut = self.buttonObject(250, 150, 111, 41, '²√x', self.squareRoot)
+        self.eightBut = self.buttonObject(130, 200, 111, 41, '8', self.numberButton)
+        self.sevenBut = self.buttonObject(10, 200, 111, 41, '7', self.numberButton)
+        self.multiplyBut = self.buttonObject(370, 200, 111, 41, '*', self.mathButton)
+        self.nineBut = self.buttonObject(250, 200, 111, 41, '9', self.numberButton)
+        self.fiveBut = self.buttonObject(130, 250, 111, 41, '5', self.numberButton)
+        self.fourBut = self.buttonObject(10, 250, 111, 41, '4', self.numberButton)
+        self.substractBut = self.buttonObject(370, 250, 111, 41, '-', self.mathButton)
+        self.sixBut = self.buttonObject(250, 250, 111, 41, '6', self.numberButton)
+        self.twoBut = self.buttonObject(130, 300, 111, 41, '2', self.numberButton)
+        self.oneBut = self.buttonObject(10, 300, 111, 41, '1', self.numberButton)
+        self.addBut = self.buttonObject(370, 300, 111, 41, '+', self.mathButton)
+        self.threeBut = self.buttonObject(250, 300, 111, 41, '3', self.numberButton)
+        self.zeroBut = self.buttonObject(130, 350, 111, 41, '0', self.numberButton)
         self.plusMinusBut = self.buttonObject(10, 350, 111, 41, '+/-', self.plusMinus)
         self.calculateBut = self.buttonObject(370, 350, 111, 41, '=', self.calculate)
-        self.dotBut = self.buttonObject(250, 350, 111, 41, '.', self.mathSymbol)
+        self.dotBut = self.buttonObject(250, 350, 111, 41, '.', self.mathButton)
 
-    #construction of window and its components
     def setupUi(self, Calculator): 
+        """
+        Creates GUI and its main compononents.
+
+        Args:
+            Calculator (object): QtWidgets.QMainWindow() 
+
+        Returns:
+            None 
+        """
         Calculator.setObjectName("Calculator")
         Calculator.setMaximumSize(494, 421)
         Calculator.setMinimumSize(494, 421)
         Calculator.setWindowOpacity(0.96)
         Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
         Calculator.setWindowIcon(QtGui.QIcon('logo.ico'))
+        Calculator.setWindowTitle("PyCalc Basic")
 
         self.centralwidget.setObjectName("centralwidget")
 
@@ -85,8 +93,22 @@ class Ui_Calculator:
 
         self.value = self.numberField.text()
 
-    # template for buttons 
     def buttonObject(self, xCord, yCord, width, height, name, function):
+        """
+        Template for buttons. 
+        Defines button and assigns function to it.
+
+        Args:
+            xCord (int): x cordinate of position
+            yCord (int): y cordinate of position
+            width (int): width of button
+            height (int): height of button
+            name (string): name / symbol of button 
+            function (NoneType): function assigned to button 
+
+        Returns:
+            self.pushButton (object): pushButton object 
+        """
         self.font.setFamily("Segoe UI Light")
         self.font.setPointSize(18)
         self.font.setBold(False)
@@ -99,16 +121,22 @@ class Ui_Calculator:
 
         try:
             if name in ('/', '*', '-', '+', '.'):
-                self.pushButton.clicked.connect(lambda: self.mathSymbol(name))
+                self.pushButton.clicked.connect(lambda: self.mathButton(name))
             elif int(name) in range(0, 10):
-                self.pushButton.clicked.connect(lambda: self.numbers(name))
+                self.pushButton.clicked.connect(lambda: self.numberButton(name))
         except ValueError:
             self.pushButton.clicked.connect(function)
 
         return self.pushButton
 
-    # calculating part of number by percents 
     def percentClicked(self):
+        """
+        Calculates certain percentage of previous number.
+        For example 10 + 10% is 10 + 1.
+
+        Returns:
+            None 
+        """
         percent = ''
         pastNumber = ''
         errorCheck = True 
@@ -141,8 +169,13 @@ class Ui_Calculator:
         except Exception as e:
             self.exceptErrors(e, "Error occured - percent function") 
 
-    # revert to past expression
     def clearEntry(self):
+        """
+        Reverts to previous expression 
+
+        Returns:
+            None 
+        """
         if len(self.calcHistory) == 1:
             self.value = '0'
         elif len(self.calcHistory) > 1:
@@ -153,16 +186,26 @@ class Ui_Calculator:
         self.numberField.setToolTip(self.value)
         print(self.value)
     
-    # delete entire expression and calcHistory
     def clear(self):
+        """
+        Clears entire history of mathematical expressions 
+
+        Returns:
+            None 
+        """
         self.value = '0'
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         self.calcHistory = ['0']
         print(self.value)
 
-    # delete one character from expression
     def back(self):
+        """
+        Deletes one character from current expression.
+
+        Returns:
+            None 
+        """
         if len(self.value) == 1:
             self.value = '0'
         else:
@@ -172,23 +215,30 @@ class Ui_Calculator:
         self.numberField.setToolTip(self.value)
         print(self.value)
 
-    # calculating fraction of numbers - 1/x
-    def fraction(self):
+    def oneTenth(self):
+        """
+        Calculates 1/10 fraction of number. 
+        Can be used if there's only a number not expression.
+
+        Returns:
+            None 
+        """
         try:    
-            if self.value == self.aftFrac:
-                self.value = self.befFrac
-                self.befFrac = self.aftFrac
+            if self.value == self.afterCalculation:
+                self.value = self.beforeCalc
+                self.beforeCalc = self.afterCalculation
             else:
                 if len(self.value) >= 12: 
-                    self.exceptErrors('Too big number', "Too big number - fraction function")
+                    self.exceptErrors('Too big number - size limit 12', 
+                    "Too big number - fraction function, size limit")
                     return None
 
-                self.befFrac = self.value 
+                self.beforeCalc = self.value 
                 self.value = self.betterRound(1 / float(self.value))
                     
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            self.aftFrac = self.value
+            self.afterCalculation = self.value
             self.calcHistory.append(self.value)
             self.checkLongNumber()
             print(self.value)
@@ -197,8 +247,13 @@ class Ui_Calculator:
         except Exception as e:
             self.exceptErrors(e, "Error occured - fraction function")
 
-    # calculating second degree's power
-    def expSec(self):
+    def squared(self):
+        """
+        Squares a number. Can be used if there's only a number not expression.
+
+        Returns:
+            None 
+        """
         try:
             self.value = float(self.value)
             self.value = self.betterRound(pow(self.value, 2))
@@ -210,8 +265,14 @@ class Ui_Calculator:
         except Exception as e:
             self.exceptErrors(e, "Error occured - expSec function")
 
-    # calculating square root
-    def rootSec(self):
+    def squareRoot(self):
+        """
+        Calculates square root of any number. 
+        Can be used if there's only a number not expression.
+
+        Returns:
+            None 
+        """        
         try:
             self.value = self.betterRound(sqrt(float(self.value)))
             self.calcHistory.append(self.value)
@@ -221,9 +282,15 @@ class Ui_Calculator:
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - rootSec function")
-    
-    # calculating entire expressions from self.value 
+     
     def calculate(self):
+        """
+        Mathematical expression handler. 
+        Calculates entire expressions and shows result. 
+
+        Returns: 
+            None
+        """
         try:
             if self.value == self.pastResult:
                 self.value += self.pastCalculation
@@ -254,8 +321,13 @@ class Ui_Calculator:
         except Exception as e:
             self.exceptErrors(e, "Syntax error - can't calculate")
 
-    # changing + to - and the other way
     def plusMinus(self):
+        """
+        Changes positive number to negative and vice versa.
+
+        Returns: 
+            None
+        """ 
         try:         
             if float(self.value) % 1 == 0:
                 self.value = str(-(float(self.value)))
@@ -273,12 +345,22 @@ class Ui_Calculator:
         except Exception as e:
             self.exceptErrors(e, "Can't convert it by plusMinus function")
 
-    # connected to QTimer - exceptErrors for hiding error label
     def clearErrors(self):
+        """
+        Clear error label in certain time after showing error info. 
+
+        Returns: 
+            None
+        """
         self.errorLabel.setText('')
 
-    # checking if number has 64 chars or more
     def checkLongNumber(self):
+        """
+        Result size limit handler. Checks if result exceeds size rule. 
+
+        Returns:
+            None
+        """
         if len(self.value) >= 64: 
             self.errorLabel.setText('SizeLimit: 64')
             QtCore.QTimer.singleShot(2000, self.clearErrors)
@@ -286,21 +368,47 @@ class Ui_Calculator:
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
     
-    # passing errors to error label 
     def exceptErrors(self, errorLog, errorCom):
+        """
+        Error handler - shows error in IDE console and 
+        passes info to communicate user.
+
+        Args:
+            errorLog (string): log info 
+            errorCom (string): info for user passed to error label 
+
+        Returns: 
+            None
+        """
         print(errorLog)
         self.errorLabel.setText(errorCom)
         QtCore.QTimer.singleShot(2000, self.clearErrors)
 
-    # making buttons with math symbols better
-    def mathSymbol(self, symbol):
+    def mathButton(self, symbol):
+        """
+        Mathematical button handler - basic functioning.
+
+        Args:
+            symbol (string): symbol of mathematical button
+
+        Returns:
+            None
+        """
         self.value += symbol
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value) 
         print(self.value)
 
-    # making numeric button better
-    def numbers(self, number):
+    def numberButton(self, number):
+        """
+        Number button handler - basic functioning.
+
+        Args:
+            number (int or float): raw number
+
+        Returns:
+            None
+        """
         if number == '0' and self.value != '0':
             self.value += '0'
         else:
@@ -313,13 +421,21 @@ class Ui_Calculator:
         self.numberField.setToolTip(self.value)
         print(self.value)
 
-    # rounding numbers to 10 decimal places
     def betterRound(self, number):         
+        """
+        Rounds number to 10 decimal places.
+
+        Args:
+            number (int or float): raw number
+
+        Returns:
+            result (str): rounded number
+        """
         if number % 1 == 0:
             result = str(int(number))
         elif number % 1 != 0:
             result = format(number, ".10f")
-            
+
             if '.00000' in str(result) or '.99999' in str(result):
                 result = format(number, ".0f")
         
@@ -327,7 +443,6 @@ class Ui_Calculator:
 
         return result 
 
-# app execution
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
