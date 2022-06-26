@@ -205,14 +205,18 @@ class Ui_Calculator:
         Returns:
             None 
         """
-        if len(self.value) == 1:
-            self.value = '0'
-        else:
-            self.value = self.value[0:len(self.value)-1]
-            
-        self.numberField.setText(self.value)
-        self.numberField.setToolTip(self.value)
-        print(self.value)
+        try:
+            if len(str(self.value)) == 1:
+                self.value = '0'
+            else:
+                self.value = self.value[0:len(self.value)-1]
+                
+            self.numberField.setText(self.value)
+            self.numberField.setToolTip(self.value)
+            print(self.value)
+        except Exception as e:
+            self.exceptErrors(e, "Error occured - back function")
+            self.clear()
 
     def fraction(self):
         """
@@ -239,7 +243,7 @@ class Ui_Calculator:
             self.numberField.setToolTip(self.value)
             self.afterCalculation = self.value
             self.calculatorHistory.append(self.value)
-            self.checkLongNumber()
+            self.checkSizeLimit()
             print(self.value)
         except ZeroDivisionError as e:
             self.exceptErrors(e, "ZeroDivisionError - fraction function")
@@ -259,7 +263,7 @@ class Ui_Calculator:
             self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            self.checkLongNumber()
+            self.checkSizeLimit()
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - expSec function")
@@ -277,7 +281,7 @@ class Ui_Calculator:
             self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            self.checkLongNumber()
+            self.checkSizeLimit()
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - rootSec function")
@@ -315,7 +319,7 @@ class Ui_Calculator:
             self.numberField.setText(self.value)
             self.pastResult = self.value 
             self.numberField.setToolTip(self.value)
-            self.checkLongNumber()
+            self.checkSizeLimit()
             print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Syntax error - can't calculate")
@@ -354,7 +358,7 @@ class Ui_Calculator:
         """
         self.errorLabel.setText('')
 
-    def checkLongNumber(self):
+    def checkSizeLimit(self):
         """
         Result size limit handler. 
         Checks if result exceeds size rule. 
@@ -365,9 +369,7 @@ class Ui_Calculator:
         if len(self.value) >= 64: 
             self.errorLabel.setText('SizeLimit: 64')
             QtCore.QTimer.singleShot(2000, self.clearErrors)
-            self.value = '0'
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
+            self.clearEntry()
     
     def exceptErrors(self, errorLog, errorCom):
         """
