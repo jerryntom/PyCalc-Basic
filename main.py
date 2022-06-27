@@ -233,7 +233,7 @@ class Ui_Calculator:
             else:
                 if len(self.value) >= 12: 
                     self.exceptErrors('Too big number - size limit 12', 
-                    "Too big number - fraction function, size limit")
+                    "Too big number - size limit")
                     return None
 
                 self.beforeCalculation = self.value 
@@ -310,7 +310,7 @@ class Ui_Calculator:
                 self.pastCalculation = self.pastCalculation[::-1]
 
             self.value = eval(self.value)
-            self.value = self.betterRound(float(self.value))
+            self.value = self.betterRound(self.value)
                 
             if float(self.value) % 1 == 0 and '.' in self.value: 
                 self.value = self.value[0:len(self.value)-2]
@@ -434,6 +434,8 @@ class Ui_Calculator:
         Returns:
             result (str): rounded number
         """
+        print("Number:",number)
+        
         if number % 1 == 0:
             result = str(int(number))
         elif number % 1 != 0:
