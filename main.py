@@ -1,3 +1,4 @@
+from unicodedata import decimal
 from PyQt5 import QtCore, QtGui, QtWidgets
 from math import sqrt
 
@@ -7,6 +8,10 @@ class Ui_Calculator:
         self.styleSheet = """
             QToolTip {
                 font-size: 25pt;
+            }
+            
+            QLabel {
+                text-align: left;
             }
             """
         self.calculatorHistory = ["0"]
@@ -157,16 +162,22 @@ class Ui_Calculator:
             percent = float(percent[::-1])
             percent = str(percent/100)
             pastNumber = pastNumber[::-1]
-            result = float(percent) * float(pastNumber) 
 
-            self.value += self.betterRound(result)
+            result = float(percent) * float(pastNumber) 
+            result = self.roundNumber(result)
+
+            if result == "":
+                raise ValueError
+
+            self.value += result 
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            
-            print(self.value)
-            print(percent, pastNumber)
+        except ValueError:
+            self.exceptErrors("Calculated value is too small",
+            "Calculated value is too small")
         except Exception as e:
             self.exceptErrors(e, "Error occured - percent function") 
+        
 
     def clearEntry(self):
         """
@@ -183,7 +194,6 @@ class Ui_Calculator:
 
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
-        print(self.value)
     
     def clear(self):
         """
@@ -196,7 +206,6 @@ class Ui_Calculator:
         self.numberField.setText(self.value)
         self.numberField.setToolTip(self.value)
         self.calculatorHistory = ['0']
-        print(self.value)
 
     def back(self):
         """
@@ -213,7 +222,6 @@ class Ui_Calculator:
                 
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - back function")
             self.clear()
@@ -231,20 +239,20 @@ class Ui_Calculator:
                 self.value = self.beforeCalculation
                 self.beforeCalculation = self.afterCalculation
             else:
-                if len(self.value) >= 12: 
-                    self.exceptErrors('Too big number - size limit 12', 
-                    "Too big number - size limit")
+                if len(self.value) >= 10: 
+                    self.exceptErrors("Size limit - 10", 
+                    "Size limit - 10")
                     return None
 
                 self.beforeCalculation = self.value 
-                self.value = self.betterRound(1 / float(self.value))
+                self.pastCalculation = "fraction"
+                self.value = self.roundNumber(1 / float(self.value))
                     
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.afterCalculation = self.value
             self.calculatorHistory.append(self.value)
             self.checkSizeLimit()
-            print(self.value)
         except ZeroDivisionError as e:
             self.exceptErrors(e, "ZeroDivisionError - fraction function")
         except Exception as e:
@@ -259,12 +267,11 @@ class Ui_Calculator:
         """
         try:
             self.value = float(self.value)
-            self.value = self.betterRound(pow(self.value, 2))
+            self.value = self.roundNumber(pow(self.value, 2))
             self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.checkSizeLimit()
-            print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - expSec function")
 
@@ -277,12 +284,11 @@ class Ui_Calculator:
             None 
         """        
         try:
-            self.value = self.betterRound(sqrt(float(self.value)))
+            self.value = self.roundNumber(sqrt(float(self.value)))
             self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
             self.checkSizeLimit()
-            print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Error occured - rootSec function")
      
@@ -310,7 +316,7 @@ class Ui_Calculator:
                 self.pastCalculation = self.pastCalculation[::-1]
 
             self.value = eval(self.value)
-            self.value = self.betterRound(self.value)
+            self.value = self.roundNumber(self.value)
                 
             if float(self.value) % 1 == 0 and '.' in self.value: 
                 self.value = self.value[0:len(self.value)-2]
@@ -320,9 +326,11 @@ class Ui_Calculator:
             self.pastResult = self.value 
             self.numberField.setToolTip(self.value)
             self.checkSizeLimit()
-            print(self.value)
         except Exception as e:
-            self.exceptErrors(e, "Syntax error - can't calculate")
+            if "/" in self.pastCalculation:
+                self.clear()
+
+            self.exceptErrors(e, "Can't calculate")
 
     def plusMinus(self):
         """
@@ -345,7 +353,6 @@ class Ui_Calculator:
             self.calculatorHistory.append(self.value)
             self.numberField.setText(self.value)
             self.numberField.setToolTip(self.value)
-            print(self.value)
         except Exception as e:
             self.exceptErrors(e, "Can't convert it by plusMinus function")
 
@@ -367,8 +374,7 @@ class Ui_Calculator:
             None
         """
         if len(self.value) >= 64: 
-            self.errorLabel.setText('SizeLimit: 64')
-            QtCore.QTimer.singleShot(2000, self.clearErrors)
+            self.exceptErrors("Size limit 64", "Size limit - 64")
             self.clearEntry()
     
     def exceptErrors(self, errorLog, errorCom):
@@ -400,7 +406,6 @@ class Ui_Calculator:
         self.value += symbol
         self.numberField.setText(self.value)   
         self.numberField.setToolTip(self.value) 
-        print(self.value)
 
     def numberButton(self, number):
         """
@@ -422,9 +427,8 @@ class Ui_Calculator:
                         
         self.numberField.setText(self.value)  
         self.numberField.setToolTip(self.value)
-        print(self.value)
 
-    def betterRound(self, number):         
+    def roundNumber(self, number):         
         """
         Rounds number to 10 decimal places.
 
@@ -434,14 +438,16 @@ class Ui_Calculator:
         Returns:
             result (str): rounded number
         """
-        print("Number:",number)
-        
         if number % 1 == 0:
             result = str(int(number))
         elif number % 1 != 0:
             result = format(number, ".10f")
 
-            if '.00000' in str(result) or '.99999' in str(result):
+            if "%" in self.pastCalculation:
+                result = round(number, 10)
+            elif "/" in self.pastCalculation:
+                result = round(number, 4)
+            elif ('.00000' in str(result) or '.99999' in str(result))  and self.pastCalculation != "fraction":
                 result = format(number, ".0f")
         
             result = str(result).rstrip('0')
