@@ -1,4 +1,4 @@
-# PyCalc - basic calculator 🧮
+# PyCalc - basic calculator (28062022v1) 🧮
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KAJXTAYQC7BW)
 
 Support open source software and help me in further development 😃
