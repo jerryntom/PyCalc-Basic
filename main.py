@@ -1,6 +1,23 @@
-from unicodedata import decimal
 from PyQt5 import QtCore, QtGui, QtWidgets
 from math import sqrt
+from platform import system
+from ctypes import windll
+import os
+import sys
+
+if system() == "Windows":
+    myappid = u'jerryntom.python.pycalc.29062022v1'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+else:
+    pass
+
+def resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+        
+        return os.path.join(base_path, relative_path)
 
 
 class Ui_Calculator:
@@ -67,7 +84,7 @@ class Ui_Calculator:
         Calculator.setMinimumSize(494, 421)
         Calculator.setWindowOpacity(0.96)
         Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
-        Calculator.setWindowIcon(QtGui.QIcon('images/logo.ico'))
+        Calculator.setWindowIcon(QtGui.QIcon(resource_path('images/logo.ico')))
         Calculator.setWindowTitle("PyCalc Basic")
 
         self.centralwidget.setObjectName("centralwidget")
