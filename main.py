@@ -77,6 +77,50 @@ class CalculatorApp:
         self.comma_button = self.button_object(250, 350, 111, 41, '.', self.math_operation_button)
         self.push_button = None
 
+    def set_key_press_event(self, event):
+        """
+        Waits for key press to catch event
+
+        :param event: calculator app event
+        :return: None
+        """
+        key_press = event.key()
+
+        if key_press == QtCore.Qt.Key_0:
+            self.digit_button('0')
+        elif key_press == QtCore.Qt.Key_1:
+            self.digit_button('1')
+        elif key_press == QtCore.Qt.Key_2:
+            self.digit_button('2')
+        elif key_press == QtCore.Qt.Key_3:
+            self.digit_button('3')
+        elif key_press == QtCore.Qt.Key_4:
+            self.digit_button('4')
+        elif key_press == QtCore.Qt.Key_5:
+            self.digit_button('5')
+        elif key_press == QtCore.Qt.Key_6:
+            self.digit_button('6')
+        elif key_press == QtCore.Qt.Key_7:
+            self.digit_button('7')
+        elif key_press == QtCore.Qt.Key_8:
+            self.digit_button('8')
+        elif key_press == QtCore.Qt.Key_9:
+            self.digit_button('9')
+        elif key_press == QtCore.Qt.Key_Return:
+            self.evaluate_expression()
+        elif key_press == QtCore.Qt.Key_Backspace:
+            self.clear_character()
+        elif key_press == QtCore.Qt.Key_Plus:
+            self.math_operation_button('+')
+        elif key_press == QtCore.Qt.Key_Minus:
+            self.math_operation_button('-')
+        elif key_press == QtCore.Qt.Key_Asterisk:
+            self.math_operation_button('*')
+        elif key_press == QtCore.Qt.Key_Slash:
+            self.math_operation_button('/')
+        elif key_press == QtCore.Qt.Key_Period:
+            self.math_operation_button('.')
+
     def set_user_interface(self, calculator_window_instance):
         """
         Creates GUI and its main components.
@@ -91,6 +135,7 @@ class CalculatorApp:
         calculator_window_instance.setWindowOpacity(0.96)
         calculator_window_instance.setWindowIcon(QtGui.QIcon(relative_path_to_absolute('images/logo.ico')))
         calculator_window_instance.setWindowTitle("PyCalc Basic")
+        calculator_window_instance.keyPressEvent = self.set_key_press_event
 
         self.central_widget.setObjectName("centralwidget")
 
@@ -102,7 +147,7 @@ class CalculatorApp:
         self.expression_field_label.setGeometry(QtCore.QRect(10, 10, 471, 81))
         self.expression_field_label.setFont(self.font)
         self.expression_field_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
-        self.expression_field_label.setObjectName("label")
+        self.expression_field_label.setObjectName("qlineedit")
         self.expression_field_label.setToolTip('0')
         self.expression_field_label.setText('0')
 
