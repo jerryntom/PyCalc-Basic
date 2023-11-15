@@ -1,28 +1,31 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from math import sqrt
-from platform import system
-from ctypes import windll
 import os
 import sys
 
-if system() == "Windows":
-    myappid = u'jerryntom.python.pycalc.29062022v1'
-    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-else:
-    pass
 
-def resource_path(relative_path):
-        try:
-            base_path = sys._MEIPASS
-        except Exception:
-            base_path = os.path.abspath(".")
-        
-        return os.path.join(base_path, relative_path)
+def relative_path_to_absolute(relative_path):
+    try:
+        # scenario for PyInstaller executable
+        base_path = sys.MEIPASS
+    except Exception as e:
+        # base_path is a current working directory
+        base_path = os.path.abspath(".")
+        print(e)
+
+    return os.path.join(base_path, relative_path)
 
 
-class Ui_Calculator:
+class CalculatorApp:
+    """
+    CalculatorApp is a class representing a basic calculator application
+    with a graphical user interface (GUI) implemented using PyQt5.
+
+    This class provides functionality for performing mathematical calculations,
+    handling user interactions, and displaying the results in the GUI.
+    """
     def __init__(self):
-        self.styleSheet = """
+        self.basic_style_sheet = """
             QToolTip {
                 font-size: 25pt;
             }
@@ -31,452 +34,418 @@ class Ui_Calculator:
                 text-align: left;
             }
             """
-        self.calculatorHistory = ["0"]
-        self.pastResult = ""
-        self.pastCalculation = ""
-        self.afterCalculation = ""
-        self.beforeCalculation = ""    
-        self.value = "0"
+        self.calculator_history = ["0"]
+        self.prev_calculation = ""
+        self.past_calculation = ""
+        self.after_calculation = ""
+        self.before_calculation = ""
+        self.expression_field_value = "0"
 
-        self.centralwidget = QtWidgets.QWidget(Calculator)
+        # elements of gui
+        self.central_widget = QtWidgets.QWidget(Calculator)
         self.font = QtGui.QFont()
-        self.numberField = QtWidgets.QLabel(self.centralwidget)
-        self.errorLabel = QtWidgets.QLabel(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(Calculator)
+        self.expression_field_label = QtWidgets.QLabel(self.central_widget)
+        self.error_label = QtWidgets.QLabel(self.central_widget)
+        self.status_bar = QtWidgets.QStatusBar(Calculator)
 
-        self.percentButton = self.buttonObject(10, 100, 111, 41, '%', self.percents)
-        self.clearEntryButton = self.buttonObject(130, 100, 111, 41, 'CE', self.clearEntry)
-        self.clearButton= self.buttonObject(250, 100, 111, 41, 'C', self.clear)
-        self.backButton = self.buttonObject(370, 100, 111, 41, 'Back', self.back)
-        self.squaredButton = self.buttonObject(130, 150, 111, 41, 'x²', self.squared)
-        self.fractionButton = self.buttonObject(10, 150, 111, 41, '1/x', self.fraction)
-        self.divideButton = self.buttonObject(370, 150, 111, 41, '/', self.mathButton)
-        self.rootSecButton = self.buttonObject(250, 150, 111, 41, '²√x', self.squareRoot)
-        self.eightButton = self.buttonObject(130, 200, 111, 41, '8', self.numberButton)
-        self.sevenButton = self.buttonObject(10, 200, 111, 41, '7', self.numberButton)
-        self.multiplyButton = self.buttonObject(370, 200, 111, 41, '*', self.mathButton)
-        self.nineButton = self.buttonObject(250, 200, 111, 41, '9', self.numberButton)
-        self.fiveButton = self.buttonObject(130, 250, 111, 41, '5', self.numberButton)
-        self.fourButton = self.buttonObject(10, 250, 111, 41, '4', self.numberButton)
-        self.substractButton = self.buttonObject(370, 250, 111, 41, '-', self.mathButton)
-        self.sixButton = self.buttonObject(250, 250, 111, 41, '6', self.numberButton)
-        self.twoButton = self.buttonObject(130, 300, 111, 41, '2', self.numberButton)
-        self.oneButton = self.buttonObject(10, 300, 111, 41, '1', self.numberButton)
-        self.addButton = self.buttonObject(370, 300, 111, 41, '+', self.mathButton)
-        self.threeButton = self.buttonObject(250, 300, 111, 41, '3', self.numberButton)
-        self.zeroButton = self.buttonObject(130, 350, 111, 41, '0', self.numberButton)
-        self.plusMinusButton = self.buttonObject(10, 350, 111, 41, '+/-', self.plusMinus)
-        self.calculateButton = self.buttonObject(370, 350, 111, 41, '=', self.calculate)
-        self.commaButton = self.buttonObject(250, 350, 111, 41, '.', self.mathButton)
+        # buttons
+        self.calculate_fraction_of_previous_number_button = \
+            self.button_object(10, 100, 111, 41, '%', self.calculate_fraction_of_previous_number)
+        self.revert_to_previous_result_button = \
+            self.button_object(130, 100, 111, 41, 'CE', self.revert_to_previous_result)
+        self.clear_calculator_memory_button = self.button_object(250, 100, 111, 41, 'C', self.clear_calculator_memory)
+        self.clear_character_button = self.button_object(370, 100, 111, 41, 'Back', self.clear_character)
+        self.square_number_button = self.button_object(130, 150, 111, 41, 'x²', self.square_number)
+        self.number_to_inverse_button = self.button_object(10, 150, 111, 41, '1/x', self.number_to_inverse)
+        self.divide_button = self.button_object(370, 150, 111, 41, '/', self.math_operation_button)
+        self.square_root_button = self.button_object(250, 150, 111, 41, '²√x', self.square_root)
+        self.eight_button = self.button_object(130, 200, 111, 41, '8', self.digit_button)
+        self.seven_button = self.button_object(10, 200, 111, 41, '7', self.digit_button)
+        self.multiply_button = self.button_object(370, 200, 111, 41, '*', self.math_operation_button)
+        self.nine_button = self.button_object(250, 200, 111, 41, '9', self.digit_button)
+        self.five_button = self.button_object(130, 250, 111, 41, '5', self.digit_button)
+        self.four_button = self.button_object(10, 250, 111, 41, '4', self.digit_button)
+        self.subtract_button = self.button_object(370, 250, 111, 41, '-', self.math_operation_button)
+        self.six_button = self.button_object(250, 250, 111, 41, '6', self.digit_button)
+        self.two_button = self.button_object(130, 300, 111, 41, '2', self.digit_button)
+        self.one_button = self.button_object(10, 300, 111, 41, '1', self.digit_button)
+        self.add_button = self.button_object(370, 300, 111, 41, '+', self.math_operation_button)
+        self.three_button = self.button_object(250, 300, 111, 41, '3', self.digit_button)
+        self.zero_button = self.button_object(130, 350, 111, 41, '0', self.digit_button)
+        self.negate_number_button = self.button_object(10, 350, 111, 41, '+/-', self.negate_number)
+        self.evaluate_expression_button = self.button_object(370, 350, 111, 41, '=', self.evaluate_expression)
+        self.comma_button = self.button_object(250, 350, 111, 41, '.', self.math_operation_button)
+        self.push_button = None
 
-    def setupUi(self, Calculator): 
+    def set_user_interface(self, calculator_window_instance):
         """
-        Creates GUI and its main compononents.
+        Creates GUI and its main components.
 
-        Args:
-            Calculator (object): QtWidgets.QMainWindow() 
-
-        Returns:
-            None 
+        :param calculator_window_instance: QtWidgets.QMainWindow()
+        :return: None
         """
-        Calculator.setObjectName("Calculator")
-        Calculator.setMaximumSize(494, 421)
-        Calculator.setMinimumSize(494, 421)
-        Calculator.setWindowOpacity(0.96)
-        Calculator.setTabShape(QtWidgets.QTabWidget.Triangular)
-        Calculator.setWindowIcon(QtGui.QIcon(resource_path('images/logo.ico')))
-        Calculator.setWindowTitle("PyCalc Basic")
+        # properties of main window
+        calculator_window_instance.setObjectName("Calculator")
+        calculator_window_instance.setMaximumSize(494, 421)
+        calculator_window_instance.setMinimumSize(494, 421)
+        calculator_window_instance.setWindowOpacity(0.96)
+        calculator_window_instance.setWindowIcon(QtGui.QIcon(relative_path_to_absolute('images/logo.ico')))
+        calculator_window_instance.setWindowTitle("PyCalc Basic")
 
-        self.centralwidget.setObjectName("centralwidget")
+        self.central_widget.setObjectName("centralwidget")
 
         self.font.setFamily("Segoe UI Light")
         self.font.setPointSize(36)
         self.font.setBold(False)
 
-        self.numberField.setGeometry(QtCore.QRect(10, 10, 471, 81))
-        self.numberField.setFont(self.font)
-        self.numberField.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
-        self.numberField.setObjectName("label")
-        self.numberField.setToolTip('0')
-        self.numberField.setText('0')
+        # properties of expression field
+        self.expression_field_label.setGeometry(QtCore.QRect(10, 10, 471, 81))
+        self.expression_field_label.setFont(self.font)
+        self.expression_field_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
+        self.expression_field_label.setObjectName("label")
+        self.expression_field_label.setToolTip('0')
+        self.expression_field_label.setText('0')
 
         self.font.setPointSize(16)
 
-        self.errorLabel.setGeometry(QtCore.QRect(10, -50, 471, 81))
-        self.errorLabel.setFont(self.font)
-        self.errorLabel.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
-        self.errorLabel.setObjectName("errorLabel")
-        
-        self.statusbar.setObjectName("statusbar")
-        Calculator.setCentralWidget(self.centralwidget)
-        Calculator.setStatusBar(self.statusbar)
+        # properties of error label
+        self.error_label.setGeometry(QtCore.QRect(10, -50, 471, 81))
+        self.error_label.setFont(self.font)
+        self.error_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
+        self.error_label.setObjectName("errorLabel")
 
-        QtCore.QMetaObject.connectSlotsByName(Calculator)
+        # properties of status bar
+        self.status_bar.setObjectName("statusbar")
+        calculator_window_instance.setCentralWidget(self.central_widget)
+        calculator_window_instance.setStatusBar(self.status_bar)
 
-        self.value = self.numberField.text()
+        QtCore.QMetaObject.connectSlotsByName(calculator_window_instance)
 
-    def buttonObject(self, xCord, yCord, width, height, name, function):
+        self.expression_field_value = self.expression_field_label.text()
+
+        return calculator_window_instance
+
+    def button_object(self, x_pos, y_pos, width, height, name, function):
         """
-        Template for buttons. 
-        Defines button and assigns function to it.
-
-        Args:
-            xCord (int): x cordinate of position
-            yCord (int): y cordinate of position
-            width (int): width of button
-            height (int): height of button
-            name (string): name / symbol of button 
-            function (NoneType): function assigned to button 
-
-        Returns:
-            self.pushButton (object): pushButton object 
+        Template for button. Defines button and assigns function to it.
+        :param x_pos: x coordinate of position
+        :param y_pos: y coordinate of position
+        :param width: width of button
+        :param height: height of button
+        :param name: name / symbol of button
+        :param function: function assigned to button
+        :return: self.pushButton(object): QPushButton object
         """
         self.font.setFamily("Segoe UI Light")
         self.font.setPointSize(18)
         self.font.setBold(False)
-        
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(xCord, yCord, width, height))
-        self.pushButton.setFont(self.font)
-        self.pushButton.setObjectName(name)
-        self.pushButton.setText(name)
+
+        self.push_button = QtWidgets.QPushButton(self.central_widget)
+        self.push_button.setGeometry(QtCore.QRect(x_pos, y_pos, width, height))
+        self.push_button.setFont(self.font)
+        self.push_button.setObjectName(name)
+        self.push_button.setText(name)
 
         try:
             if name in ('/', '*', '-', '+', '.'):
-                self.pushButton.clicked.connect(lambda: self.mathButton(name))
+                self.push_button.clicked.connect(lambda: self.math_operation_button(name))
             elif int(name) in range(0, 10):
-                self.pushButton.clicked.connect(lambda: self.numberButton(name))
+                self.push_button.clicked.connect(lambda: self.digit_button(name))
         except ValueError:
-            self.pushButton.clicked.connect(function)
+            self.push_button.clicked.connect(function)
 
-        return self.pushButton
+        return self.push_button
 
-    def percents(self):
+    def calculate_fraction_of_previous_number(self):
         """
-        Calculates certain percentage of previous number.
+        Calculates certain percentage of previous number inside expression.
         For example 10 + 10% is 10 + 1.
 
-        Returns:
-            None 
+        :return: None
         """
         percent = ''
-        pastNumber = ''
-        
-        try: 
-            for i in range(len(self.value) - 1, -1, -1):
-                if self.value[i] in ('-', '+', '*', '/'):
+        previous_number = ''
+
+        try:
+            for i in range(len(self.expression_field_value) - 1, -1, -1):
+                if self.expression_field_value[i] in ('-', '+', '*', '/'):
                     break
                 else:
-                    percent += self.value[i]
-            
-            for i in range(len(self.value)-len(percent) - 2, -1, -1):
-                if self.value[i] in ('-', '+', '*', '/'):
-                    break 
+                    percent += self.expression_field_value[i]
+
+            for i in range(len(self.expression_field_value) - len(percent) - 2, -1, -1):
+                if self.expression_field_value[i] in ('-', '+', '*', '/'):
+                    break
                 else:
-                    pastNumber += self.value[i]
+                    previous_number += self.expression_field_value[i]
 
-            self.value = self.value[0:len(self.value)-len(percent)]
+            self.expression_field_value = self.expression_field_value[0:len(self.expression_field_value) - len(percent)]
             percent = float(percent[::-1])
-            percent = str(percent/100)
-            pastNumber = pastNumber[::-1]
+            percent = str(percent / 100)
+            previous_number = previous_number[::-1]
 
-            result = float(percent) * float(pastNumber) 
-            result = self.roundNumber(result)
+            result = float(percent) * float(previous_number)
+            result = self.round_number(result)
 
             if result == "":
                 raise ValueError
 
-            self.value += result 
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
+            self.expression_field_value += result
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
         except ValueError:
-            self.exceptErrors("Calculated value is too small",
-            "Calculated value is too small")
-        except Exception as e:
-            self.exceptErrors(e, "Error occured - percent function") 
-        
+            self.generate_error_info("Calculated value is too small",
+                                     "Calculated value is too small")
+        except Exception as error:
+            self.generate_error_info(str(error), "Error occurred - percent function")
 
-    def clearEntry(self):
+    def revert_to_previous_result(self):
         """
-        Reverts to previous expression 
+        Reverts to previous result.
 
-        Returns:
-            None 
+        :return: None
         """
-        if len(self.calculatorHistory) == 1:
-            self.value = '0'
-        elif len(self.calculatorHistory) > 1:
-            self.calculatorHistory.pop()
-            self.value = self.calculatorHistory[len(self.calculatorHistory)-1]
+        if len(self.calculator_history) == 1:
+            self.expression_field_value = '0'
+        elif len(self.calculator_history) > 1:
+            self.calculator_history.pop()
+            self.expression_field_value = self.calculator_history[len(self.calculator_history) - 1]
 
-        self.numberField.setText(self.value)
-        self.numberField.setToolTip(self.value)
-    
-    def clear(self):
+        self.expression_field_label.setText(self.expression_field_value)
+        self.expression_field_label.setToolTip(self.expression_field_value)
+
+    def clear_calculator_memory(self):
         """
-        Clears entire history of mathematical expressions 
+        Clears entire history of mathematical expressions
 
-        Returns:
-            None 
+        :return: None
         """
-        self.value = '0'
-        self.numberField.setText(self.value)
-        self.numberField.setToolTip(self.value)
-        self.calculatorHistory = ['0']
+        self.expression_field_value = '0'
+        self.expression_field_label.setText(self.expression_field_value)
+        self.expression_field_label.setToolTip(self.expression_field_value)
+        self.calculator_history = ['0']
 
-    def back(self):
+    def clear_character(self):
         """
         Deletes one character from current expression.
 
-        Returns:
-            None 
+        :return: None
         """
         try:
-            if len(str(self.value)) == 1:
-                self.value = '0'
+            if len(str(self.expression_field_value)) == 1:
+                self.expression_field_value = '0'
             else:
-                self.value = self.value[0:len(self.value)-1]
-                
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
-        except Exception as e:
-            self.exceptErrors(e, "Error occured - back function")
-            self.clear()
+                self.expression_field_value = self.expression_field_value[0:len(self.expression_field_value) - 1]
 
-    def fraction(self):
-        """
-        Calculates 1/x fraction where x is a current number. 
-        Can be used if there's only a number not expression.
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
+        except Exception as error:
+            self.generate_error_info(str(error), "Error occurred - clear_character function")
+            self.clear_calculator_memory()
 
-        Returns:
-            None 
+    def number_to_inverse(self):
         """
-        try:    
-            if self.value == self.afterCalculation:
-                self.value = self.beforeCalculation
-                self.beforeCalculation = self.afterCalculation
+        Calculates 1/x fraction where x is a current number.
+
+        :return: None
+        """
+        try:
+            if self.expression_field_value == self.after_calculation:
+                self.expression_field_value = self.before_calculation
+                self.before_calculation = self.after_calculation
             else:
-                if len(self.value) >= 10: 
-                    self.exceptErrors("Size limit - 10", 
-                    "Size limit - 10")
+                if len(self.expression_field_value) >= 10:
+                    self.generate_error_info("Size limit - 10",
+                                             "Size limit - 10")
                     return None
 
-                self.beforeCalculation = self.value 
-                self.pastCalculation = "fraction"
-                self.value = self.roundNumber(1 / float(self.value))
-                    
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
-            self.afterCalculation = self.value
-            self.calculatorHistory.append(self.value)
-            self.checkSizeLimit()
-        except ZeroDivisionError as e:
-            self.exceptErrors(e, "ZeroDivisionError - fraction function")
-        except Exception as e:
-            self.exceptErrors(e, "Error occured - fraction function")
+                self.before_calculation = self.expression_field_value
+                self.past_calculation = 'fraction'
+                self.expression_field_value = self.round_number(1 / float(self.expression_field_value))
 
-    def squared(self):
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
+            self.after_calculation = self.expression_field_value
+            self.calculator_history.append(self.expression_field_value)
+            self.is_result_too_big()
+        except ZeroDivisionError as error:
+            self.generate_error_info(str(error), "ZeroDivisionError - number_to_inverse function")
+        except Exception as error:
+            self.generate_error_info(str(error), "Error occurred - number_to_inverse function")
+
+    def square_number(self):
         """
-        Squares a number. Can be used if there's only a number not expression.
+        Raises a number to the second power.
 
-        Returns:
-            None 
-        """
-        try:
-            self.value = float(self.value)
-            self.value = self.roundNumber(pow(self.value, 2))
-            self.calculatorHistory.append(self.value)
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
-            self.checkSizeLimit()
-        except Exception as e:
-            self.exceptErrors(e, "Error occured - expSec function")
-
-    def squareRoot(self):
-        """
-        Calculates square root of any number. 
-        Can be used if there's only a number not expression.
-
-        Returns:
-            None 
-        """        
-        try:
-            self.value = self.roundNumber(sqrt(float(self.value)))
-            self.calculatorHistory.append(self.value)
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
-            self.checkSizeLimit()
-        except Exception as e:
-            self.exceptErrors(e, "Error occured - rootSec function")
-     
-    def calculate(self):
-        """
-        Mathematical expression handler. 
-        Calculates entire expressions and shows result. 
-
-        Returns: 
-            None
+        :return: None
         """
         try:
-            if self.value == self.pastResult:
-                self.value += self.pastCalculation
+            self.expression_field_value = float(self.expression_field_value)
+            self.expression_field_value = self.round_number(pow(self.expression_field_value, 2))
+            self.calculator_history.append(self.expression_field_value)
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
+            self.is_result_too_big()
+        except Exception as error:
+            self.generate_error_info(str(error), "Error occurred - square_number function")
+
+    def square_root(self):
+        """
+        Calculates a square root of number.
+
+        :return: None
+        """
+        try:
+            self.expression_field_value = self.round_number(sqrt(float(self.expression_field_value)))
+            self.calculator_history.append(self.expression_field_value)
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
+            self.is_result_too_big()
+        except Exception as error:
+            self.generate_error_info(str(error), "Error occurred - square_root function")
+
+    def evaluate_expression(self):
+        """
+        Evaluates a result of valid, mathematical expression.
+
+        :return: None
+        """
+        try:
+            if self.expression_field_value == self.prev_calculation:
+                self.expression_field_value += self.past_calculation
             else:
-                self.pastCalculation = ''
-                
-                for i in range(len(self.value)-1, -1, -1):
-                    if self.value[i] in ('-', '+', '*', '/'): 
-                        self.pastCalculation += self.value[i]
-                        break 
+                self.past_calculation = ''
+
+                for i in range(len(self.expression_field_value) - 1, -1, -1):
+                    if self.expression_field_value[i] in ('-', '+', '*', '/'):
+                        self.past_calculation += self.expression_field_value[i]
+                        break
                     else:
-                        self.pastCalculation += self.value[i]
+                        self.past_calculation += self.expression_field_value[i]
 
-                self.pastCalculation = self.pastCalculation[::-1]
+                self.past_calculation = self.past_calculation[::-1]
 
-            self.value = eval(self.value)
-            self.value = self.roundNumber(self.value)
-                
-            if float(self.value) % 1 == 0 and '.' in self.value: 
-                self.value = self.value[0:len(self.value)-2]
-            
-            self.calculatorHistory.append(self.value)
-            self.numberField.setText(self.value)
-            self.pastResult = self.value 
-            self.numberField.setToolTip(self.value)
-            self.checkSizeLimit()
-        except Exception as e:
-            if "/" in self.pastCalculation:
-                self.clear()
+            self.expression_field_value = eval(self.expression_field_value)
+            self.expression_field_value = self.round_number(self.expression_field_value)
 
-            self.exceptErrors(e, "Can't calculate")
+            if float(self.expression_field_value) % 1 == 0 and '.' in self.expression_field_value:
+                self.expression_field_value = self.expression_field_value[0:len(self.expression_field_value) - 2]
 
-    def plusMinus(self):
+            self.calculator_history.append(self.expression_field_value)
+            self.expression_field_label.setText(self.expression_field_value)
+            self.prev_calculation = self.expression_field_value
+            self.expression_field_label.setToolTip(self.expression_field_value)
+            self.is_result_too_big()
+        except Exception as error:
+            if "/" in self.past_calculation:
+                self.clear_calculator_memory()
+
+            self.generate_error_info(str(error), "Can't evaluate an expression - SYNTAX ERROR")
+
+    def negate_number(self):
         """
         Changes positive number to negative and vice versa.
-        Can be used if there's only a number not expression.
 
-        Returns: 
-            None
-        """ 
-        try:         
-            if float(self.value) % 1 == 0:
-                self.value = str(-(float(self.value)))
-                self.value = self.value[0:len(self.value)-2]
-            elif float(self.value) % 1 != 0:
-                self.value = str(-(float(self.value)))
-
-            if self.value == '-0':
-                self.value = '0'
-
-            self.calculatorHistory.append(self.value)
-            self.numberField.setText(self.value)
-            self.numberField.setToolTip(self.value)
-        except Exception as e:
-            self.exceptErrors(e, "Can't convert it by plusMinus function")
-
-    def clearErrors(self):
+        :return: None
         """
-        Clear error label in certain time after showing error info. 
+        try:
+            if float(self.expression_field_value) % 1 == 0:
+                self.expression_field_value = str(-(float(self.expression_field_value)))
+                self.expression_field_value = self.expression_field_value[0:len(self.expression_field_value) - 2]
+            else:
+                self.expression_field_value = str(-(float(self.expression_field_value)))
 
-        Returns: 
-            None
-        """
-        self.errorLabel.setText('')
+            if self.expression_field_value == '-0':
+                self.expression_field_value = '0'
 
-    def checkSizeLimit(self):
-        """
-        Result size limit handler. 
-        Checks if result exceeds size rule. 
+            self.calculator_history.append(self.expression_field_value)
+            self.expression_field_label.setText(self.expression_field_value)
+            self.expression_field_label.setToolTip(self.expression_field_value)
+        except Exception as error:
+            self.generate_error_info(str(error), "Can't convert by negate_number function")
 
-        Returns:
-            None
+    def is_result_too_big(self):
         """
-        if len(self.value) >= 64: 
-            self.exceptErrors("Size limit 64", "Size limit - 64")
-            self.clearEntry()
-    
-    def exceptErrors(self, errorLog, errorCom):
+        Checks if result exceeds size rule.
+
+        :return: None
         """
-        Error handler - shows error in IDE console and 
+        if len(self.expression_field_value) >= 64:
+            self.generate_error_info("Size limit 64", "Size limit - 64")
+            self.revert_to_previous_result()
+
+    def generate_error_info(self, detailed_error_info, short_error_info):
+        """
+        Error handler - shows error in IDE console and
         passes info to communicate user.
 
-        Args:
-            errorLog (string): log info 
-            errorCom (string): info for user passed to error label 
-
-        Returns: 
-            None
+        :param detailed_error_info: log info
+        :param short_error_info: info for user passed to error label
+        :return: None
         """
-        print(errorLog)
-        self.errorLabel.setText(errorCom)
-        QtCore.QTimer.singleShot(2000, self.clearErrors)
+        print(detailed_error_info)
+        self.error_label.setText(short_error_info)
+        QtCore.QTimer.singleShot(2000, lambda: self.error_label.setText(''))
 
-    def mathButton(self, symbol):
+    def math_operation_button(self, math_symbol):
         """
-        Mathematical button handler - basic functioning.
+        Mathematical operation handler - basic functioning.
 
-        Args:
-            symbol (string): symbol of mathematical button
-
-        Returns:
-            None
+        :param math_symbol: symbol of mathematical button
+        :return: None
         """
-        self.value += symbol
-        self.numberField.setText(self.value)   
-        self.numberField.setToolTip(self.value) 
+        self.expression_field_value += math_symbol
+        self.expression_field_label.setText(self.expression_field_value)
+        self.expression_field_label.setToolTip(self.expression_field_value)
 
-    def numberButton(self, number):
+    def digit_button(self, digit):
         """
-        Number button handler - basic functioning.
+        Digit button handler - basic functioning.
 
-        Args:
-            number (int or float): raw number
-
-        Returns:
-            None
+        :param digit: digit in form of a character
+        :return: None
         """
-        if number == '0' and self.value != '0':
-            self.value += '0'
+        if digit == '0' and self.expression_field_value != '0':
+            self.expression_field_value += '0'
         else:
-            if self.value == '0':
-                self.value = number
+            if self.expression_field_value == '0':
+                self.expression_field_value = digit
             else:
-                self.value += number
-                        
-        self.numberField.setText(self.value)  
-        self.numberField.setToolTip(self.value)
+                self.expression_field_value += digit
 
-    def roundNumber(self, number):         
+        self.expression_field_label.setText(str(self.expression_field_value))
+        self.expression_field_label.setToolTip(str(self.expression_field_value))
+
+    def round_number(self, number):
         """
-        Rounds number to 10 decimal places.
+        Rounds number maximally 10 decimal places.
 
-        Args:
-            number (int or float): raw number
-
-        Returns:
-            result (str): rounded number
+        :param number: Number to round
+        :return: result (str): rounded number
         """
         if number % 1 == 0:
             result = str(int(number))
-        elif number % 1 != 0:
+        else:
             result = format(number, ".10f")
 
-            if "%" in self.pastCalculation:
+            if "%" in self.past_calculation:
                 result = round(number, 10)
-            elif "/" in self.pastCalculation:
+            elif "/" in self.past_calculation:
                 result = round(number, 4)
-            elif ('.00000' in str(result) or '.99999' in str(result))  and self.pastCalculation != "fraction":
+            elif ('.00000' in str(result) or '.99999' in str(result)) and self.past_calculation != "fraction":
                 result = format(number, ".0f")
-        
+
             result = str(result).rstrip('0')
 
-        return result 
+        return result
 
+
+# block execution from another Python file than main.py
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     Calculator = QtWidgets.QMainWindow()
-    ui = Ui_Calculator()
-    app.setStyleSheet(ui.styleSheet)
-    ui.setupUi(Calculator)
+    ui = CalculatorApp()
+    app.setStyleSheet(ui.basic_style_sheet)
+    ui.set_user_interface(Calculator)
     Calculator.show()
     sys.exit(app.exec_())
