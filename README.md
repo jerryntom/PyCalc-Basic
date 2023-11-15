@@ -1,11 +1,15 @@
-# PyCalc - basic calculator (29062022v1) 🧮
+# PyCalc - basic calculator (15112023v2) 🧮
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KAJXTAYQC7BW)
 
 Support open source software and help me in further development 😃
+
+# PROJECT IS OUT OF MAINTENANCE
+
 ## Features 📝
 - calculating simple expressions
 - mathematical functions (percents, fractions, exponentiation, square root)
-- built-in memory of operations  
+- built-in memory of operations
+- continuous keyboard input (digit buttons, enter - evaluation, math operators, backspace - clearing characters)
 
 ## How it's made ❔
 PyCalc is written in Python with PyQt5 module. 
